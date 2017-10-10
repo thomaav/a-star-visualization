@@ -210,6 +210,14 @@ class Board(object):
                 # if gif is wanted, save images and call convert, then
                 # delete images
                 if visualize_fname:
+                    # create necessary directories
+                    if not os.path.exists(IMAGE_DIR):
+                        print("[INFO]: Creating {img_dir}.".format(img_dir=IMAGE_DIR))
+                        os.makedirs(IMAGE_DIR)
+                    if not os.path.exists(GIF_DIR):
+                        print("[INFO]: Creating {gif_dir}.".format(gif_dir=GIF_DIR))
+                        os.makedirs(GIF_DIR)
+
                     # add solution to images if we want a gif
                     solution_board = self.get_solution_board()
                     images.append(self.draw_image(board=solution_board, closed_cells=closed_cells))
