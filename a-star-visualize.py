@@ -268,8 +268,8 @@ class Board(object):
         return solution_board
 
 def main():
-    main_board = Board("boards/board-1-2.txt")
-    main_board.a_star(euclidean_h, visualize_fname="test.gif")
+    main_board = Board("boards/board-2-3.txt")
+    main_board.a_star(euclidean_h, visualize_fname="../example_gifs/with-costs.gif")
 
 if __name__ == "__main__":
     main()
