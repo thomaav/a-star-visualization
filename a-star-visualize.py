@@ -2,13 +2,13 @@ import heapq
 import os
 import shutil
 import subprocess
+import sys
 from itertools import product
 from math import sqrt, inf, floor
 from random import shuffle
 from PIL import Image, ImageDraw, ImageColor
 
 IMAGE_DIR = "./astar_images/"
-GIF_DIR = "./astar_gifs/"
 
 def euclidean_h(c1, c2):
     """
@@ -214,9 +214,6 @@ class Board(object):
                     if not os.path.exists(IMAGE_DIR):
                         print("[INFO]: Creating {img_dir}.".format(img_dir=IMAGE_DIR))
                         os.makedirs(IMAGE_DIR)
-                    if not os.path.exists(GIF_DIR):
-                        print("[INFO]: Creating {gif_dir}.".format(gif_dir=GIF_DIR))
-                        os.makedirs(GIF_DIR)
 
                     # add solution to images if we want a gif
                     solution_board = self.get_solution_board()
@@ -229,8 +226,8 @@ class Board(object):
                         padding_length = img_num_length - len(str(i))
                         image.save(IMAGE_DIR + "image" + "0" * padding_length + str(i) + ".png", "PNG")
 
-                    print("[INFO]: Converting to gif: {gif_dir}{name}.".format(gif_dir=GIF_DIR, name=visualize_fname))
-                    convert_command = "convert -delay 1 -loop 1 " + IMAGE_DIR + "*png " + GIF_DIR + visualize_fname
+                    print("[INFO]: Converting to gif: {name}.".format(name=visualize_fname))
+                    convert_command = "convert -delay 1 -loop 1 " + IMAGE_DIR + "*png " +visualize_fname
                     subprocess.call(convert_command, shell=True)
 
                     print("[INFO]: Cleaning up images in {img_dir}.".format(img_dir=IMAGE_DIR))
@@ -276,8 +273,15 @@ class Board(object):
         return solution_board
 
 def main():
-    main_board = Board("boards/board-2-3.txt")
-    main_board.a_star(euclidean_h, visualize_fname="../example_gifs/with-costs.gif")
+    try:
+        board = sys.argv[1]
+        out_file = sys.argv[2]
+    except Exception as e:
+        print("[USAGE]: a-star-visualize board out_file")
+        exit(0)
+
+    main_board = Board(board)
+    main_board.a_star(euclidean_h, visualize_fname=out_file)
 
 if __name__ == "__main__":
     main()
