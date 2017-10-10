@@ -31,36 +31,40 @@ def darken_color(rgb, multiplier):
 
 class Board(object):
     def __init__(self, fname):
-        with open(fname, "r") as f:
-            self.board = f.read().splitlines()
-            start_line = [line for line in self.board if "A" in line][0]
-            end_line = [line for line in self.board if "B" in line][0]
-            self.start_index = (self.board.index(start_line), start_line.index("A"))
-            self.end_index = (self.board.index(end_line), end_line.index("B"))
-            self.length = len(self.board[0])
-            self.height = len(self.board)
-            self.costs = {
-                "w": 100,
-                "m": 50,
-                "f": 10,
-                "g": 5,
-                "r": 1,
-                ".": 1,
-                "A": 0,
-                "B": 0
-            }
-            self.colors = {
-                ".": "white",
-                "#": "black",
-                "A": "#00FF00",
-                "B": "red",
-                "w": "#4C4CFF",
-                "m": "#A5A5A5",
-                "f": "#007F00",
-                "g": "#7FFF7F",
-                "r": "#BF7F3F",
-                "O": "yellow"
-            }
+        try:
+            with open(fname, "r") as f:
+                self.board = f.read().splitlines()
+        except Exception as e:
+            print("[ERROR]: could not open file {fname_str}".format(fname_str=fname))
+            exit(0)
+        start_line = [line for line in self.board if "A" in line][0]
+        end_line = [line for line in self.board if "B" in line][0]
+        self.start_index = (self.board.index(start_line), start_line.index("A"))
+        self.end_index = (self.board.index(end_line), end_line.index("B"))
+        self.length = len(self.board[0])
+        self.height = len(self.board)
+        self.costs = {
+            "w": 100,
+            "m": 50,
+            "f": 10,
+            "g": 5,
+            "r": 1,
+            ".": 1,
+            "A": 0,
+            "B": 0
+        }
+        self.colors = {
+            ".": "white",
+            "#": "black",
+            "A": "#00FF00",
+            "B": "red",
+            "w": "#4C4CFF",
+            "m": "#A5A5A5",
+            "f": "#007F00",
+            "g": "#7FFF7F",
+            "r": "#BF7F3F",
+            "O": "yellow"
+        }
 
     def show(self):
         print(*self.board, sep="\n")
