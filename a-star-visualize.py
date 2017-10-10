@@ -64,6 +64,11 @@ class Board(object):
         print(*self.board, sep="\n")
 
     def draw_image(self, board=None, closed_cells=[], square_side=25):
+        """
+        Return an Image of the board that is colored according to
+        self.colors, and has darkened colors for given closed cells.
+        """
+        # should anyone want to pass another board, then sure
         board = board if board is not None else self.board
         img_squares = []
         colors = []
@@ -71,6 +76,7 @@ class Board(object):
         img_length = self.length * square_side
         img_height = self.height * square_side
 
+        # create squares, colors and chars for ImageDraw
         for i in range(self.height):
             for j in range(self.length):
                 # x and y is opposite here than what is in the list
@@ -88,6 +94,7 @@ class Board(object):
             colors[index] = darken_color(color_as_rgb, 0.4)
             chars[index] = "x"
 
+        # draw the actual image
         image = Image.new("RGB", (img_length, img_height))
         draw = ImageDraw.Draw(image)
         for i, square in enumerate(img_squares):
@@ -95,6 +102,7 @@ class Board(object):
             color = colors[i]
             draw.rectangle((square[0], square[1]), fill=color)
             draw.text((square[0]), char, fill="black")
+
         return image
 
     def get_adjacent_cells(self, index):
@@ -199,15 +207,6 @@ class Board(object):
                 # if gif is wanted, save images and call convert, then
                 # delete images
                 if visualize_fname:
-                    # empty the images directory for new gif
-                    for f in os.listdir(IMAGE_DIR):
-                        f_path = os.path.join(IMAGE_DIR, f)
-                        try:
-                            if os.path.isfile(f_path):
-                                os.unlink(f_path)
-                        except Exception as e:
-                            print(e)
-
                     img_num_length = len(str(len(images)))
                     print("[INFO]: Saving {num_images} images.".format(num_images=len(images)))
                     for i, image in enumerate(images):
@@ -215,9 +214,18 @@ class Board(object):
                         # left pad 0s for proper sorting with imagemagick convert
                         image.save(IMAGE_DIR + "image" + "0" * padding_num + str(i) + ".png", "PNG")
 
-                    print("[INFO]: Converting to gif.")
-                    convert_command = "convert -delay 1 -loop 0 " + IMAGE_DIR + "*png " + GIF_DIR + visualize_fname 
+                    print("[INFO]: Converting to gif: {gif_dir}{name}.".format(gif_dir=GIF_DIR, name=visualize_fname))
+                    convert_command = "convert -delay 1 -loop 0 " + IMAGE_DIR + "*png " + GIF_DIR + visualize_fname
                     subprocess.call(convert_command, shell=True)
+
+                    print("[INFO]: Cleaning up images in {img_dir}.".format(img_dir=IMAGE_DIR))
+                    for f in os.listdir(IMAGE_DIR):
+                        f_path = os.path.join(IMAGE_DIR, f)
+                        try:
+                            if os.path.isfile(f_path):
+                                os.unlink(f_path)
+                        except Exception as e:
+                            print(e)
 
                 return path, open_cells, closed_cells
 
@@ -250,19 +258,8 @@ class Board(object):
         return solution_board
 
 def main():
-    # testing A*
-    # main_board = Board("boards/board-1-1.txt")
-    # solution_path, open_cells, closed_cells = main_board.a_star(euclidean_h)
-    # main_board.print_visualization(solution_path, open_cells, closed_cells); print()
-    # main_board = Board("boards/board-2-1.txt")
-    # solution_path, open_cells, closed_cells = main_board.a_star(euclidean_h)
-    # main_board.print_visualization(solution_path, open_cells, closed_cells); print()
-
-    # main_board = Board("boards/board-1-4.txt")
-    # main_board.draw("test.jpg")
-
-    main_board = Board("boards/board-1-4.txt")
-    solution_path, open_cells, closed_cells = main_board.a_star(euclidean_h, visualize_fname="test.gif")
+    main_board = Board("boards/board-1-2.txt")
+    main_board.a_star(euclidean_h, visualize_fname="test.gif")
 
 if __name__ == "__main__":
     main()
