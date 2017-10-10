@@ -1,5 +1,7 @@
 import heapq
-import os, shutil, subprocess
+import os
+import shutil
+import subprocess
 from itertools import product
 from math import sqrt, inf, floor
 from random import shuffle
@@ -195,8 +197,9 @@ class Board(object):
             if visualize_fname:
                 images.append(self.draw_image(closed_cells=closed_cells))
 
-            # we found the end, reconstruct the path
+            # we found the end, we are done
             if cell_index == end:
+                # reconstruct the path
                 path = []
                 tmp_cell = end
                 while tmp_cell != start:
@@ -207,15 +210,19 @@ class Board(object):
                 # if gif is wanted, save images and call convert, then
                 # delete images
                 if visualize_fname:
+                    # add solution to images if we want a gif
+                    solution_board = self.get_solution_board()
+                    images.append(self.draw_image(board=solution_board, closed_cells=closed_cells))
+
                     img_num_length = len(str(len(images)))
                     print("[INFO]: Saving {num_images} images.".format(num_images=len(images)))
                     for i, image in enumerate(images):
-                        padding_num = img_num_length - len(str(i))
                         # left pad 0s for proper sorting with imagemagick convert
-                        image.save(IMAGE_DIR + "image" + "0" * padding_num + str(i) + ".png", "PNG")
+                        padding_length = img_num_length - len(str(i))
+                        image.save(IMAGE_DIR + "image" + "0" * padding_length + str(i) + ".png", "PNG")
 
                     print("[INFO]: Converting to gif: {gif_dir}{name}.".format(gif_dir=GIF_DIR, name=visualize_fname))
-                    convert_command = "convert -delay 1 -loop 0 " + IMAGE_DIR + "*png " + GIF_DIR + visualize_fname
+                    convert_command = "convert -delay 1 -loop 1 " + IMAGE_DIR + "*png " + GIF_DIR + visualize_fname
                     subprocess.call(convert_command, shell=True)
 
                     print("[INFO]: Cleaning up images in {img_dir}.".format(img_dir=IMAGE_DIR))
@@ -229,6 +236,8 @@ class Board(object):
 
                 return path, open_cells, closed_cells
 
+            # check if there are any new adjacent cells and add them
+            # to the fringe
             for adjacent_cell in self.get_adjacent_cells(cell_index):
                 if adjacent_cell in prev_cell:
                     continue
@@ -239,13 +248,14 @@ class Board(object):
                 if non_h_score[cell_index] + adjacent_cell_cost >= non_h_score[adjacent_cell]:
                     continue
 
-                # best current path to adjacent cell
+                # best current path to adjacent cell, so push onto
+                # stack
                 prev_cell[adjacent_cell] = cell_index
                 non_h_score[adjacent_cell] = non_h_score[cell_index] + adjacent_cell_cost
                 heapq.heappush(fringe, (non_h_score[adjacent_cell] + h_function(adjacent_cell, end), adjacent_cell))
 
         # return empty path if there exists none
-        return []
+        return [], [], []
 
     def get_solution_board(self):
         # unimmutify strings
