@@ -35,7 +35,7 @@ class Board(object):
             with open(fname, "r") as f:
                 self.board = f.read().splitlines()
         except Exception as e:
-            print("[ERROR]: could not open file {fname_str}".format(fname_str=fname))
+            print("[ERROR]: could not open file: {fname_str}.".format(fname_str=fname))
             exit(0)
         start_line = [line for line in self.board if "A" in line][0]
         end_line = [line for line in self.board if "B" in line][0]
