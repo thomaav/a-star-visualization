@@ -232,7 +232,7 @@ class Board(object):
                         image.save(IMAGE_DIR + "image" + "0" * padding_length + str(i) + ".png", "PNG")
 
                     print("[INFO]: Converting to gif: {name}.".format(name=visualize_fname))
-                    convert_command = "convert -delay 1 -loop 1 " + IMAGE_DIR + "*png " +visualize_fname
+                    convert_command = "convert -delay 2 -loop 1 " + IMAGE_DIR + "*png " +visualize_fname
                     subprocess.call(convert_command, shell=True)
 
                     print("[INFO]: Cleaning up images in {img_dir}.".format(img_dir=IMAGE_DIR))
